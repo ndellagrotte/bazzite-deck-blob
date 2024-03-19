@@ -49,9 +49,9 @@ jobs:
         base_image_flavor: [main, asus, framework, surface]
         base_name: [bazzite, bazzite-deck, bazzite-nvidia, bazzite-deck-blob]
         base_image_name: [kinoite, silverblue]
-        major_version: [rawhide]
+        major_version: [39]
         include:
-          - major_version: rawhide
+          - major_version: 39
             is_latest_version: true
             is_stable_version: true
         exclude:
