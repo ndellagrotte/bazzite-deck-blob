@@ -1,6 +1,6 @@
 ublue_variants:
-  - label: ublue-os/bazzite-deck-blob
+  - label: ublue-os/bazzite-deck
     ks: /kickstart/ublue-os-deck.ks
     flavors:
-      - label: bazzite-deck-blob
-        info: Bazzite (Steam Deck & HTPC Blob Edition)
+      - label: bazzite-deck
+        info: Bazzite (Steam Deck & HTPC Edition)
