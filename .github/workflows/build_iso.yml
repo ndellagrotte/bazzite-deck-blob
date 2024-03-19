@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_name: [bazzite-deck-blob]
+        image_name: [bazzite-deck]
         major_version: [39]
         image_tag: [stable]
     steps:
