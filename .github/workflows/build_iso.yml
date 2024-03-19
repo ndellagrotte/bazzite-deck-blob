@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_name: [bazzite, bazzite-nvidia, bazzite-gnome, bazzite-gnome-nvidia, bazzite-deck, bazzite-deck-gnome, bazzite-deck-blob, bazzite-ally, bazzite-ally-gnome, bazzite-asus, bazzite-gnome-asus, bazzite-asus-nvidia, bazzite-gnome-asus-nvidia]
+        image_name: [bazzite-deck-blob]
         major_version: [39]
         image_tag: [stable]
     steps:
