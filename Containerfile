@@ -24,13 +24,6 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-"
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-bazzite-multilib-fedora-"${FEDORA_MAJOR_VERSION}".repo?arch=x86_64 -O /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
     wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo?arch=x86_64 -O /etc/yum.repos.d/_copr_ublue-os-staging.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/system76-scheduler/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-system76-scheduler-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_kylegospo-system76-scheduler.repo && \
-
-# THIS IS STUPID! I AM STUPID!
-
-wget https://copr.fedorainfracloud.org/coprs/dturner/TOS/repo/fedora-"${FEDORA_MAJOR_VERSION}"/dturner-TOS-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_dturner-TOS.repo && \
-
-# THIS IS STUPID! I AM STUPID!
-
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-LatencyFleX-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/hl2linux-selinux/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-hl2linux-selinux-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/obs-vkcapture/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-obs-vkcapture-fedora-"${FEDORA_MAJOR_VERSION}".repo?arch=x86_64 -O /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
@@ -113,10 +106,6 @@ RUN rpm-ostree override replace \
     --experimental \
     --from repo=updates \
         vulkan-loader \
-        || true && \
-    --experimental \
-    --from repo=updates \
-        libgcc \
         || true && \
     rpm-ostree override replace \
     --experimental \
@@ -225,13 +214,6 @@ RUN rpm-ostree override remove \
         pipewire-pulseaudio \
         pipewire-utils \
         xorg-x11-server-Xwayland && \
-
-# THIS IS STUPID! I AM STUPID!
-
-
-
-# THIS IS STUPID! I AM STUPID!
-
     rpm-ostree install \
         mesa-va-drivers-freeworld \
         mesa-vdpau-drivers-freeworld.x86_64 && \
@@ -299,6 +281,7 @@ RUN rpm-ostree install \
         mesa-libGLU \
         vulkan-tools \
         glibc.i686 \
+        extest.i686 \
         xwiimote-ng \
         twitter-twemoji-fonts \
         google-noto-sans-cjk-fonts \
@@ -512,18 +495,22 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     systemctl enable dconf-update.service \
 ; fi
 
-# Install Gamescope, ROCM, and Waydroid on non-Nvidia images
-
-RUN rpm-ostree override replace \
+# install gamescope 3.14 from some random dudes repo
+RUN wget https://copr.fedorainfracloud.org/coprs/dturner/TOS/repo/fedora-"${FEDORA_MAJOR_VERSION}"/dturner-TOS-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_dturner-TOS.repo && \
+rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:dturner:TOS \
         gamescope \
         gamescope-libs
 
-# RUN rpm-ostree install \
-#   gamescope.x86_64 \
+# Install Gamescope, ROCM, and Waydroid on non-Nvidia images
+RUN rpm-ostree install \
+#        gamescope.x86_64 \
 #        gamescope-libs.i686 \
-#        gamescope-shaders \
+        gamescope-shaders \
+        rocm-hip \
+        rocm-opencl \
+        rocm-clinfo \
         waydroid \
         cage \
         wlr-randr && \
@@ -626,59 +613,13 @@ RUN /tmp/image-info.sh && \
     chmod -R 755 /var/lib/bluetooth && \
     ostree container commit
 
-FROM bazzite as bazzite-nvidia
-
-ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-nvidia}"
-ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
-ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-nvidia}"
-ARG AKMODS_FLAVOR="${AKMODS_FLAVOR:-fsync}"
-ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
-ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
-ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
-ARG NVIDIA_MAJOR_VERSION="550"
-
-# Fetch NVIDIA driver
-COPY --from=ghcr.io/ublue-os/akmods-nvidia:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION}-${NVIDIA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
-COPY system_files/nvidia/shared system_files/nvidia/${BASE_IMAGE_NAME} /
-
-# Install NVIDIA driver
-RUN wget https://raw.githubusercontent.com/ublue-os/nvidia/main/install.sh -O /tmp/nvidia-install.sh && \
-    wget https://raw.githubusercontent.com/ublue-os/nvidia/main/post-install.sh -O /tmp/nvidia-post-install.sh && \
-    chmod +x /tmp/nvidia-install.sh && IMAGE_NAME="${BASE_IMAGE_NAME}" RPMFUSION_MIRROR="" /tmp/nvidia-install.sh && \
-    chmod +x /tmp/nvidia-post-install.sh && IMAGE_NAME="${BASE_IMAGE_NAME}" RPMFUSION_MIRROR="" /tmp/nvidia-post-install.sh
-
-# Install Explicit Sync Patches
-RUN wget https://copr.fedorainfracloud.org/coprs/gloriouseggroll/nvidia-explicit-sync/repo/fedora-"${FEDORA_MAJOR_VERSION}"/gloriouseggroll-nvidia-explicit-sync-fedora-"${FEDORA_MAJOR_VERSION}".repo?arch=x86_64 -O /etc/yum.repos.d/_copr_gloriouseggroll-nvidia-explicit-sync.repo && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:gloriouseggroll:nvidia-explicit-sync \
-        xorg-x11-server-Xwayland && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:gloriouseggroll:nvidia-explicit-sync \
-        egl-wayland \
-        || true
-
-# Cleanup & Finalize
-RUN rm -rf \
-        /tmp/* \
-        /var/* && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_gloriouseggroll-nvidia-explicit-sync.repo && \
-    rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
-    rm -rf /usr/lib64/zluda && \
-    echo "import \"/usr/share/ublue-os/just/95-bazzite-nvidia.just\"" >> /usr/share/ublue-os/justfile && \
-    mkdir -p /var/tmp && \
-    chmod -R 1777 /var/tmp && \
-    mkdir -p /var/lib/bluetooth && \
-    chmod -R 755 /var/lib/bluetooth && \
-    ostree container commit
-
 FROM bazzite as bazzite-deck
 
 ARG IMAGE_NAME="${IMAGE_NAME:-bazzite-deck}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
+ARG AKMODS_FLAVOR="${AKMODS_FLAVOR:-fsync}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
 ARG NVIDIA_MAJOR_VERSION="550"
@@ -697,23 +638,6 @@ RUN rpm-ostree override remove \
             colord-kde \
     ; fi
 
-# Install NVIDIA driver
-RUN wget https://raw.githubusercontent.com/ublue-os/nvidia/main/install.sh -O /tmp/nvidia-install.sh && \
-    wget https://raw.githubusercontent.com/ublue-os/nvidia/main/post-install.sh -O /tmp/nvidia-post-install.sh && \
-    chmod +x /tmp/nvidia-install.sh && IMAGE_NAME="${BASE_IMAGE_NAME}" RPMFUSION_MIRROR="" /tmp/nvidia-install.sh && \
-    chmod +x /tmp/nvidia-post-install.sh && IMAGE_NAME="${BASE_IMAGE_NAME}" RPMFUSION_MIRROR="" /tmp/nvidia-post-install.sh
-
-# Install Explicit Sync Patches
-RUN wget https://copr.fedorainfracloud.org/coprs/gloriouseggroll/nvidia-explicit-sync/repo/fedora-"${FEDORA_MAJOR_VERSION}"/gloriouseggroll-nvidia-explicit-sync-fedora-"${FEDORA_MAJOR_VERSION}".repo?arch=x86_64 -O /etc/yum.repos.d/_copr_gloriouseggroll-nvidia-explicit-sync.repo && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:gloriouseggroll:nvidia-explicit-sync \
-        xorg-x11-server-Xwayland && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:gloriouseggroll:nvidia-explicit-sync \
-        egl-wayland \
-        || true
 
 COPY system_files/deck/shared system_files/deck/${BASE_IMAGE_NAME} /
 
@@ -879,9 +803,6 @@ RUN /tmp/image-info.sh && \
     rm -rf \
         /tmp/* \
         /var/* && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/_copr_gloriouseggroll-nvidia-explicit-sync.repo && \
-    rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json && \
-    rm -rf /usr/lib64/zluda && \
     mkdir -p /var/tmp && \
     chmod -R 1777 /var/tmp && \
     mkdir -p /var/lib/bluetooth && \
