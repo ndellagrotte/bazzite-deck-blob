@@ -27,7 +27,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-"
 
 # THIS IS STUPID! I AM STUPID!
 
-    wget https://copr.fedorainfracloud.org/coprs/dturner/TOS/repo/fedora-"${FEDORA_MAJOR_VERSION}"/dturner-TOS-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_dturner-tos.repo && \
+    wget https://copr.fedorainfracloud.org/coprs/dturner/TOS/repo/fedora-"${FEDORA_MAJOR_VERSION}"/dturner-TOS-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_dturner-TOS.repo && \
 
 # THIS IS STUPID! I AM STUPID!
 
@@ -226,7 +226,7 @@ RUN rpm-ostree override remove \
 
 rpm-ostree override replace \
     --experimental \
- --from repo=copr:copr.fedorainfracloud.org:dturner:tos \
+ --from repo=copr:copr.fedorainfracloud.org:dturner:TOS \
         gamescope.x86_64 && \
 
 # THIS IS STUPID! I AM STUPID!
