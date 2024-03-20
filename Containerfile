@@ -114,6 +114,10 @@ RUN rpm-ostree override replace \
     --from repo=updates \
         vulkan-loader \
         || true && \
+    --experimental \
+    --from repo=updates \
+        libgcc \
+        || true && \
     rpm-ostree override replace \
     --experimental \
     --from repo=updates \
