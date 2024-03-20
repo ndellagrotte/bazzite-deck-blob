@@ -227,7 +227,7 @@ RUN rpm-ostree override remove \
 rpm-ostree override replace \
     --experimental \
  --from repo=copr:copr.fedorainfracloud.org:dturner:tos \
-        gamescope && \
+        gamescope.x86_64 && \
 
 # THIS IS STUPID! I AM STUPID!
 
