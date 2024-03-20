@@ -24,6 +24,13 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-"
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite-multilib/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-bazzite-multilib-fedora-"${FEDORA_MAJOR_VERSION}".repo?arch=x86_64 -O /etc/yum.repos.d/_copr_kylegospo-bazzite-multilib.repo && \
     wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo?arch=x86_64 -O /etc/yum.repos.d/_copr_ublue-os-staging.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/system76-scheduler/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-system76-scheduler-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_kylegospo-system76-scheduler.repo && \
+
+# THIS IS STUPID! I AM STUPID!
+
+    wget https://copr.fedorainfracloud.org/coprs/dturner/TOS/repo/fedora-"${FEDORA_MAJOR_VERSION}"/dturner-TOS-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_dturner-tos.repo && \
+
+# THIS IS STUPID! I AM STUPID!
+
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-LatencyFleX-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_kylegospo-latencyflex.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/hl2linux-selinux/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-hl2linux-selinux-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_kylegospo-hl2linux-selinux.repo && \
     wget https://copr.fedorainfracloud.org/coprs/kylegospo/obs-vkcapture/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-obs-vkcapture-fedora-"${FEDORA_MAJOR_VERSION}".repo?arch=x86_64 -O /etc/yum.repos.d/_copr_kylegospo-obs-vkcapture.repo && \
@@ -214,6 +221,16 @@ RUN rpm-ostree override remove \
         pipewire-pulseaudio \
         pipewire-utils \
         xorg-x11-server-Xwayland && \
+
+# THIS IS STUPID! I AM STUPID!
+
+rpm-ostree override replace \
+    --experimental \
+ --from repo=copr:copr.fedorainfracloud.org:dturner:tos \
+        gamescope && \
+
+# THIS IS STUPID! I AM STUPID!
+
     rpm-ostree install \
         mesa-va-drivers-freeworld \
         mesa-vdpau-drivers-freeworld.x86_64 && \
@@ -497,9 +514,9 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
 
 # Install Gamescope, ROCM, and Waydroid on non-Nvidia images
 RUN rpm-ostree install \
-        gamescope.x86_64 \
-        gamescope-libs.i686 \
-        gamescope-shaders \
+#   gamescope.x86_64 \
+#        gamescope-libs.i686 \
+#        gamescope-shaders \
         waydroid \
         cage \
         wlr-randr && \
