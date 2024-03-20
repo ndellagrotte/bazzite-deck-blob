@@ -27,6 +27,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/bazzite/repo/fedora-"
 
 # THIS IS STUPID! I AM STUPID!
 
+wget https://copr.fedorainfracloud.org/coprs/dturner/TOS/repo/fedora-"${FEDORA_MAJOR_VERSION}"/dturner-TOS-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_dturner-TOS.repo && \
 
 # THIS IS STUPID! I AM STUPID!
 
@@ -61,13 +62,6 @@ RUN wget https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/repo/fedora
         kernel-modules-core-"${AKMODS_FLAVOR}".fc"${FEDORA_MAJOR_VERSION}".x86_64 \
         kernel-modules-extra-"${AKMODS_FLAVOR}".fc"${FEDORA_MAJOR_VERSION}".x86_64 \
         kernel-uki-virt-"${AKMODS_FLAVOR}".fc"${FEDORA_MAJOR_VERSION}".x86_64
-
-# install gamescope 
-RUN wget https://copr.fedorainfracloud.org/coprs/dturner/TOS/repo/fedora-"${FEDORA_MAJOR_VERSION}"/dturner-TOS-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_dturner-TOS.repo && \
-rpm-ostree override replace \
-    --experimental \
- --from repo=copr:copr.fedorainfracloud.org:dturner:TOS \
-        gamescope
 
 # Setup firmware and asusctl for ASUS devices
 RUN if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
@@ -198,6 +192,11 @@ RUN rpm-ostree override replace \
     --experimental \
     --from repo=updates \
         cups-libs \
+        || true && \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:dturner:TOS \
+        gamescope
         || true && \
     rpm-ostree override remove \
         glibc32 \
