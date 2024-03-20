@@ -67,7 +67,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/dturner/TOS/repo/fedora-"${FEDO
 rpm-ostree override replace \
     --experimental \
  --from repo=copr:copr.fedorainfracloud.org:dturner:TOS \
-        gamescope && \
+        gamescope
 
 # Setup firmware and asusctl for ASUS devices
 RUN if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
