@@ -496,24 +496,25 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
 ; fi
 
 # install gamescope dependency from some random dudes repo
-RUN wget https://copr.fedorainfracloud.org/coprs/xwalker/x2023/repo/fedora-"${FEDORA_MAJOR_VERSION}"/xwalker-x2023-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_xwalker-x2023.repo && \
-rpm-ostree install \
-       libavif
+# RUN wget https://copr.fedorainfracloud.org/coprs/xwalker/x2023/repo/fedora-"${FEDORA_MAJOR_VERSION}"/xwalker-x2023-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_xwalker-x2023.repo && \
+# rpm-ostree install \
+#       libavif
 
 # install gamescope 3.14 from some random dudes repo
-RUN wget https://copr.fedorainfracloud.org/coprs/dturner/TOS/repo/fedora-"${FEDORA_MAJOR_VERSION}"/dturner-TOS-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_dturner-TOS.repo && \
-rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:dturner:TOS \
-        libdisplay-info \
-        wlroots \
-        gamescope \
-        gamescope-libs
+# RUN wget https://copr.fedorainfracloud.org/coprs/dturner/TOS/repo/fedora-"${FEDORA_MAJOR_VERSION}"/dturner-TOS-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_dturner-TOS.repo && \
+# rpm-ostree override replace \
+#    --experimental \
+#    --from repo=copr:copr.fedorainfracloud.org:dturner:TOS \
+#        libdisplay-info \
+#        wlroots \
+#        gamescope \
+#        gamescope-libs \
+#        gamescope-shaders
 
 # Install Gamescope, ROCM, and Waydroid on non-Nvidia images
 RUN rpm-ostree install \
-#        gamescope.x86_64 \
-#        gamescope-libs.i686 \
+        gamescope.x86_64 \
+        gamescope-libs.i686 \
         gamescope-shaders \
         rocm-hip \
         rocm-opencl \
