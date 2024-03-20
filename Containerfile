@@ -193,11 +193,6 @@ RUN rpm-ostree override replace \
     --from repo=updates \
         cups-libs \
         || true && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:dturner:TOS \
-        gamescope
-        || true && \
     rpm-ostree override remove \
         glibc32 \
         || true
@@ -515,7 +510,14 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
 ; fi
 
 # Install Gamescope, ROCM, and Waydroid on non-Nvidia images
-RUN rpm-ostree install \
+
+RUN rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:dturner:TOS \
+        gamescope \
+        gamescope-libs
+
+# RUN rpm-ostree install \
 #   gamescope.x86_64 \
 #        gamescope-libs.i686 \
 #        gamescope-shaders \
