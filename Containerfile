@@ -112,6 +112,11 @@ RUN rpm-ostree override replace \
     --from repo=updates \
         alsa-lib \
         || true && \
+  rpm-ostree override replace \
+    --experimental \
+    --from repo=updates \
+        libgcc \
+        || true && \
     rpm-ostree override replace \
     --experimental \
     --from repo=updates \
@@ -280,7 +285,6 @@ RUN rpm-ostree install \
         libxcrypt-compat \
         mesa-libGLU \
         vulkan-tools \
-        libgcc.i686 \
         glibc.i686 \
         extest.i686 \
         xwiimote-ng \
